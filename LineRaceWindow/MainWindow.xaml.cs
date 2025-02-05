@@ -1,67 +1,109 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using LineRace.Managers;
 using LineRace;
 
-namespace LineRaceWindow
+
+
+namespace DirigibleBattle
 {
-    /// <summary>
-    /// Логика взаимодействия для MainWindow.xaml
-    /// </summary>
-    public partial class MainWindow : Window
-    {
-        public MainWindow()
-        {
-            InitializeComponent();
-			// Главное меню по умолчанию видно
-			MainGrid.Visibility = Visibility.Visible;
-			MainContent.Visibility = Visibility.Collapsed;
-		}
+	public partial class MainWindow
+	{
+		private PlayerManager _playerManager;
+		private PrizeManager _prizeManager;
+		private GameManager _gameManager;
+		private UIManager _uiManager;
+		private RenderManager _renderManager;
+		private NetworkManager _networkManager;
+		private TimeManager _timeManager;
 
-        private void PlayOnOneComputerButton_Click(object sender, RoutedEventArgs e)
-        {
-            GameScene gameScene = new GameScene();
-            gameScene.Run();
-        }
-		// Обработчик для кнопки "Играть по сети"
-		private void PlayOnNETButton_Click(object sender, RoutedEventArgs e)
+
+		public MainWindow()
 		{
-			// Скрыть главное меню
-			MainGrid.Visibility = Visibility.Collapsed;
+			InitializeComponent();
 
-			// Показать сетевую игру
-			MainContent.Visibility = Visibility.Visible;
-			MainContent.Content = new NetworkGameControl(this); // Загружаем сетевой экран
+			_uiManager = new UIManager(ServerButton, ClientButton, IpAddressInput, GameOverLabel, firstPlayerInfo, secondPlayerInfo, ControlSchemeComboBox);
+
+			_playerManager = new PlayerManager();
+			_prizeManager = new PrizeManager();
+			_windManager = new WindManager();
+
+			_gameManager = new GameManager(glControl, this, _uiManager, _playerManager, _prizeManager, _windManager);
+			_timeManager = new TimeManager(_gameManager, _prizeManager, _windManager);
+
+			_networkManager = new NetworkManager(_gameManager, _uiManager, _timeManager, _playerManager);
+			_networkManager.OnNetworkConnectionLost += OnNetworkConnectionLost;
+			_playerManager.SetManagers(_networkManager, _gameManager);
+			_prizeManager.SetManagers(_networkManager, _gameManager);
+			_windManager.SetManagers(_networkManager, _gameManager);
+
+			_renderManager = new RenderManager(_gameManager, _networkManager);
+
+			_uiManager.DisplayLocalIPAddress(IpAddressLabel, IpAddressInput);
+
 		}
 
-		public void BackToMainMenu()
+		private void OnNetworkConnectionLost(string message)
 		{
-			// Скрыть сетевую игру
-			MainContent.Visibility = Visibility.Collapsed;
-
-			// Показать главное меню
-			MainGrid.Visibility = Visibility.Visible;
+			if (Application.Current != null)
+			{
+				Application.Current.Dispatcher.Invoke(() =>
+				{
+					this.Close();
+					MessageBox.Show(message, "meSSAge", MessageBoxButton.OK);
+				});
+			}
+			else
+			{
+				Console.WriteLine("Application.Current is null. Cannot use Dispatcher.");
+			}
 		}
 
 
 
-		// Обработчик для кнопки "Выход"
-		private void ExitButton_Click(object sender, RoutedEventArgs e)
+		private void ServerButton_Click(object sender, RoutedEventArgs e)
 		{
-			System.Windows.Application.Current.Shutdown();
+			try
+			{
+				_networkManager.StartServer();
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine($"Error starting server: {ex.Message}");
+			}
+		}
+		private void ClientButton_Click(object sender, RoutedEventArgs e)
+		{
+			try
+			{
+				_networkManager.StartClient(IpAddressInput);
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine($"Error connecting as client: {ex.Message}");
+			}
+		}
+
+		private void ControlSchemeComboBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+		{
+			if (_playerManager == null)
+				return;
+
+			string selectedScheme = (ControlSchemeComboBox.SelectedItem as System.Windows.Controls.ComboBoxItem)?.Content.ToString();
+			if (selectedScheme == "WASD")
+			{
+				_playerManager.SetControlSchemeToWASD();
+			}
+			else
+			{
+				_playerManager.SetControlSchemeToArrowKeys();
+			}
 		}
 
 
+		private void GlControl_Render(TimeSpan obj)
+		{
+			_renderManager.GlControl_Render(obj);
+		}
 	}
 }

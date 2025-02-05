@@ -70,7 +70,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Client.cs" />
+    <Compile Include="Managers\GameManager.cs" />
+    <Compile Include="Managers\RenderManager.cs" />
+    <Compile Include="Managers\TextureManager.cs" />
+    <Compile Include="Managers\UIManager.cs" />
+    <Compile Include="TcpConnection\Client.cs" />
     <Compile Include="Components\Collider.cs" />
     <Compile Include="Components\GameAnimation.cs" />
     <Compile Include="Components\Position.cs" />
@@ -93,14 +97,16 @@
     <Compile Include="GameObjects\GameObject.cs" />
     <Compile Include="GameObjects\Line.cs" />
     <Compile Include="GameScene.cs" />
+    <Compile Include="TcpConnection\ITcpNetworkConnection.cs" />
     <Compile Include="Move\MoveBonus.cs" />
     <Compile Include="Move\MoveCarY.cs" />
     <Compile Include="Move\MoveFinishLine.cs" />
     <Compile Include="Move\MoveObject.cs" />
     <Compile Include="Move\MoveYLine.cs" />
     <Compile Include="Move\MoveCarX.cs" />
+    <Compile Include="Managers\NetworkManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Server.cs" />
+    <Compile Include="TcpConnection\Server.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram1.cd" />

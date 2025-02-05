@@ -22,10 +22,6 @@ namespace LineRace
             collidersOfGameObjects.Add(gameObject);
             this.gameObject = gameObject;
             colliderScale = scale;
-        }
-
-        
-
-       
+        }       
     }
 }

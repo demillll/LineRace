@@ -66,14 +66,14 @@ namespace LineRace
 
             
 
-            // Авто левого персонажа
+            // Авто левого игрока
             Car Player1 = new Car(new Sprite("Car1"), new Vector2(0.31f, 0.4f), GameScene.CarScale, false, true);
             Player1.AddMove(new MoveCarX(Key.D, Key.A, "Car1",1));
             Car Car2 = new Car(new Sprite("Car3"), new Vector2(0.42f, -0.6f), GameScene.CarScale, false, false);
             Car2.AddMove(new MoveCarY(Key.W, Key.S, "Car3",2));
 
 
-            // Авто правого персонажа
+            // Авто правого игрока
             Car Player2 = new Car(new Sprite("Car2"), new Vector2(1.6f, 0.4f), GameScene.CarScale, true, true);
             Player2.AddMove(new MoveCarX(Key.Right, Key.Left, "Car2",2));
             Car Car4 = new Car(new Sprite("Car3"), new Vector2(1.65f, -0.65f), GameScene.CarScale, true, false);
@@ -131,13 +131,7 @@ namespace LineRace
 
             return backgroundLosesWIn;
 
-
-
         }
-
-        
-
-       
 
     }
 }
