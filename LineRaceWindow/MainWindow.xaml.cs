@@ -24,14 +24,44 @@ namespace LineRaceWindow
         public MainWindow()
         {
             InitializeComponent();
-        }
+			// Главное меню по умолчанию видно
+			MainGrid.Visibility = Visibility.Visible;
+			MainContent.Visibility = Visibility.Collapsed;
+		}
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void PlayOnOneComputerButton_Click(object sender, RoutedEventArgs e)
         {
             GameScene gameScene = new GameScene();
             gameScene.Run();
         }
+		// Обработчик для кнопки "Играть по сети"
+		private void PlayOnNETButton_Click(object sender, RoutedEventArgs e)
+		{
+			// Скрыть главное меню
+			MainGrid.Visibility = Visibility.Collapsed;
 
-        
-    }
+			// Показать сетевую игру
+			MainContent.Visibility = Visibility.Visible;
+			MainContent.Content = new NetworkGameControl(this); // Загружаем сетевой экран
+		}
+
+		public void BackToMainMenu()
+		{
+			// Скрыть сетевую игру
+			MainContent.Visibility = Visibility.Collapsed;
+
+			// Показать главное меню
+			MainGrid.Visibility = Visibility.Visible;
+		}
+
+
+
+		// Обработчик для кнопки "Выход"
+		private void ExitButton_Click(object sender, RoutedEventArgs e)
+		{
+			System.Windows.Application.Current.Shutdown();
+		}
+
+
+	}
 }

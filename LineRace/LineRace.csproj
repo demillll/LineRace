@@ -70,6 +70,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Client.cs" />
     <Compile Include="Components\Collider.cs" />
     <Compile Include="Components\GameAnimation.cs" />
     <Compile Include="Components\Position.cs" />
@@ -99,6 +100,7 @@
     <Compile Include="Move\MoveYLine.cs" />
     <Compile Include="Move\MoveCarX.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Server.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram1.cd" />
