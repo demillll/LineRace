@@ -17,8 +17,14 @@ namespace LineRace
             this.@object = @object;
         }
 
-        public abstract void Update(List<GameObject> gameObjects);
-    }
+		// Абстрактный метод для отправки данных о положении объекта (реализация будет в дочернем классе)
+		public abstract void SendPositionData();
+
+		// Абстрактный метод для получения данных о положении объекта (реализация будет в дочернем классе)
+		public abstract void ReceivePositionData();
+
+		public abstract void Update(List<GameObject> gameObjects);
+	}
 
 }
 

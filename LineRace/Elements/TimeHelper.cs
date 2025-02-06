@@ -72,5 +72,11 @@ namespace LineRace
             _previousFPSMeasurementTime = _watch.ElapsedMilliseconds;
             _previousTicks = _watch.Elapsed.Ticks;
         }
-    }
+		// Синхронизация времени
+		public static void SetTime(float serverTime)
+		{
+			_time = serverTime;
+			_previousTicks = (long)(serverTime * TimeSpan.TicksPerSecond);
+		}
+	}
 }

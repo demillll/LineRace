@@ -9,20 +9,16 @@ namespace LineRace
 	class MoveCarY : MoveObject
 	{
 		private float speed;
-
 		private Key MoveUp;
 		private Key MoveDown;
-
 		private float PressDown;
 
 		public static BackgroundLoseWin LoseLeft;
 		public static BackgroundLoseWin LoseRight;
 
 		private int FuelKoef = 4;
-
 		private string Animation;
 		private int Numer;
-
 		private bool IsStop = false;
 
 		public MoveCarY(Key MoveUp, Key MoveDown, string Animation, int Numer)
@@ -41,97 +37,78 @@ namespace LineRace
 
 			if (inputDirectX.KeyboardUpdated)
 			{
-				if (Numer == 1 || Numer == 2 || Numer == 3 || Numer == 4)
+				foreach (var obj in gameObjects)
 				{
-					foreach (var obj in gameObjects)
-					{
-						if (obj is Car && ((Car)obj).IsPlayer && (@object.position.center - obj.position.center).Length() < 0.17f)
-						{
-							speed = 0;
-							((Car)obj).IsCrash = true;
-							IsStop = true;
-						}
-					}
-
-					if (((Numer == 1 || Numer == 2) && @object.Site == false && IsStop) ||
-						((Numer == 3 || Numer == 4) && @object.Site == true && IsStop))
+					if (obj is Car && ((Car)obj).IsPlayer && (@object.position.center - obj.position.center).Length() < 0.17f)
 					{
 						speed = 0;
-						AddImages.CreateBackgroundLoses();
-						LoseLeft = AddImages.CreateBackgroundLoses()[Numer <= 2 ? 0 : 1];
-						LoseLeft.IsActiv = true;
+						((Car)obj).IsCrash = true;
+						IsStop = true;
 					}
+				}
 
-					if (!((Car)@object).IsPlayer)
+				if ((Numer == 1 || Numer == 2) && @object.Site == false && IsStop)
+				{
+					speed = 0;
+					AddImages.CreateBackgroundLoses();
+					LoseLeft = AddImages.CreateBackgroundLoses()[Numer <= 2 ? 0 : 1];
+					LoseLeft.IsActiv = true;
+				}
+
+				if (!((Car)@object).IsPlayer)
+				{
+					if (inputDirectX.KeyboardState.IsPressed(MoveUp) && !inputDirectX.KeyboardState.IsPressed(MoveDown))
 					{
-						// Движение вниз (ускорение)
-						if (inputDirectX.KeyboardState.IsPressed(MoveUp) && !inputDirectX.KeyboardState.IsPressed(MoveDown))
+						if (speed < 0.2f)
+							speed += 0.00005f;
+						if (((Car)@object).Fuel > 0)
 						{
-							if (speed < 0.2f)
-								speed += 0.00005f;
-							if (((Car)@object).Fuel > 0)
+							((Car)@object).Fuel -= speed * FuelKoef;
+							if (((Car)@object).Fuel <= 0)
 							{
-								((Car)@object).Fuel -= speed * FuelKoef;
-								if (((Car)@object).Fuel <= 0)
-								{
-									speed = 0;
-									AddImages.CreateBackgroundLoses();
-									LoseLeft = AddImages.CreateBackgroundLoses()[Numer <= 2 ? 0 : 1];
-									LoseLeft.IsActiv = true;
-								}
+								speed = 0;
+								AddImages.CreateBackgroundLoses();
+								LoseLeft = AddImages.CreateBackgroundLoses()[Numer <= 2 ? 0 : 1];
+								LoseLeft.IsActiv = true;
 							}
 						}
-
-						// Торможение
-						if (inputDirectX.KeyboardState.IsPressed(MoveDown) && !inputDirectX.KeyboardState.IsPressed(MoveUp))
-						{
-							speed -= 0.0001f;
-							@object.sprite.SetAnimation(Animation);
-							@object.position.center.Y -= PressDown;
-						}
-
-						if (!inputDirectX.KeyboardState.IsPressed(MoveUp))
-						{
-							if (speed > 0)
-								speed -= 0.00005f;
-							else if (speed < 0)
-								speed = 0;
-						}
 					}
 
-					// Перемещение в случайную зону
-					Random rnd = new Random();
-					float zoneX;
-					switch (Numer)
+					if (inputDirectX.KeyboardState.IsPressed(MoveDown) && !inputDirectX.KeyboardState.IsPressed(MoveUp))
 					{
-						case 1:
-							zoneX = RandomFloat(rnd, -0.43, 0);
-							break;
-						case 2:
-							zoneX = RandomFloat(rnd, 0, 0.54);
-							break;
-						case 3:
-							zoneX = RandomFloat(rnd, 0.83, 1.36);
-							break;
-						case 4:
-							zoneX = RandomFloat(rnd, 1.36, 1.82);
-							break;
-						default:
-							zoneX = 0;
-							break;
+						speed -= 0.0001f;
+						@object.sprite.SetAnimation(Animation);
+						@object.position.center.Y -= PressDown;
 					}
-					float zoneYLimit = RandomFloat(rnd, 2, 15);
 
-					if (@object.position.center.Y > zoneYLimit)
+					if (!inputDirectX.KeyboardState.IsPressed(MoveUp))
 					{
-						@object.position.center.Y = -0.8f;
-						@object.position.center.X = zoneX;
+						if (speed > 0)
+							speed -= 0.00005f;
+						else if (speed < 0)
+							speed = 0;
 					}
-					if (@object.position.center.Y < -0.8f)
-					{
-						@object.position.center.Y = zoneYLimit;
-						@object.position.center.X = zoneX;
-					}
+				}
+
+				Random rnd = new Random();
+				float zoneX = RandomFloat(rnd, -0.43, 0);
+				float zoneYLimit = RandomFloat(rnd, 2, 15);
+
+				if (@object.position.center.Y > zoneYLimit)
+				{
+					@object.position.center.Y = -0.8f;
+					@object.position.center.X = zoneX;
+				}
+				if (@object.position.center.Y < -0.8f)
+				{
+					@object.position.center.Y = zoneYLimit;
+					@object.position.center.X = zoneX;
+				}
+
+				// Отправляем обновления о положении машины на сервер
+				if (NetworkManager.IsServer)
+				{
+					NetworkManager.SendObjectPosition(@object);
 				}
 			}
 		}
@@ -141,4 +118,5 @@ namespace LineRace
 			return (float)(min + random.NextDouble() * (max - min));
 		}
 	}
+
 }

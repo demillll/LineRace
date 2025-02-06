@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SharpDX;
+using Newtonsoft.Json;
 
 namespace LineRace
 {
@@ -36,13 +37,22 @@ namespace LineRace
             this.center.Y = centerY;
             this.scale = scale;
         }
+		public string Serialize()
+		{
+			return JsonConvert.SerializeObject(this);
+		}
 
-    }
+		// Метод для десериализации
+		public static Position Deserialize(string json)
+		{
+			return JsonConvert.DeserializeObject<Position>(json);
+		}
+
+	}
 
 }
 //Данный код содержит определение класса "Position", который представляет позицию игрового объекта. Класс имеет следующие поля:
 
-  
 //"scale" - коэффициент масштабирования объекта;
 //"angle" - угол поворота объекта.*\
 

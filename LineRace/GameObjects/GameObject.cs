@@ -19,10 +19,12 @@ namespace LineRace
         /// </summary>
         protected internal Position position;
 
-        /// <summary>
-        /// Список объектов класса MoveObject
-        /// </summary>
-        protected internal List<MoveObject> moveObject = new List<MoveObject>();
+		public Vector2 Position { get; set; }
+
+		/// <summary>
+		/// Список объектов класса MoveObject
+		/// </summary>
+		protected internal List<MoveObject> moveObject = new List<MoveObject>();
 
         /// <summary>
         /// Переменная для маштаба
@@ -79,37 +81,38 @@ namespace LineRace
                     script.Update(gameObjects);
                 }
             }
-            Bitmap bitmap = sprite.animation.GetCurrentSprite(this.sprite);
-            Vector2 translation = new Vector2();
-            translation.X = sprite.PositionOfCenter.X / bitmap.Size.Width + position.center.X * position.scale;
-            translation.Y = sprite.PositionOfCenter.Y / bitmap.Size.Height + position.center.Y * position.scale;
-            matrix = Matrix3x2.Rotation(-position.angle, translation) *
-                Matrix3x2.Scaling(position.scale * scale / bitmap.Size.Width, position.scale * scale / bitmap.Size.Height, translation) *
+			Bitmap bitmap = sprite.animation.GetCurrentSprite(this.sprite);
+			Vector2 translation = new Vector2();
+			translation.X = sprite.PositionOfCenter.X / bitmap.Size.Width + position.center.X * position.scale;
+			translation.Y = sprite.PositionOfCenter.Y / bitmap.Size.Height + position.center.Y * position.scale;
 
-                Matrix3x2.Translation(translation * scale);
-            WindowRenderTarget r = dx2d.RenderTarget;
-            r.Transform = matrix;
-            r.DrawBitmap(bitmap, opacity, BitmapInterpolationMode.NearestNeighbor);
-        }
-        /// <summary>
-        /// Обновление списка скриптов
-        /// </summary>
-        /// <param name="moveAdd">параметр массива</param>
-        public virtual void AddMove(params MoveObject[] moveAdd)
-        {
-            for (int i = 0; i < moveAdd.Length; i++)
-            {
-                moveAdd[i].SignToObject(this);
-                moveObject.Add(moveAdd[i]);
-            }
-        }
-        /// <summary>
-        /// конструктор базового класса 
-        /// </summary>
-        public GameObject()
-        { 
-        }
+			matrix = Matrix3x2.Rotation(-position.angle, translation) *
+					 Matrix3x2.Scaling(position.scale * scale / bitmap.Size.Width, position.scale * scale / bitmap.Size.Height, translation) *
+					 Matrix3x2.Translation(translation * scale);
 
+			WindowRenderTarget r = dx2d.RenderTarget;
+			r.Transform = matrix;
+			r.DrawBitmap(bitmap, opacity, BitmapInterpolationMode.NearestNeighbor);
+		}
+
+		// Метод для обновления позиции объекта и отправки данных о его положении
+		public void UpdatePositionAndSend()
+		{
+			// Отправляем обновление состояния позиции объекта
+			if (NetworkManager.IsServer)
+			{
+				NetworkManager.SendObjectPosition(this);
+			}
+		}
+
+		public virtual void AddMove(params MoveObject[] moveAdd)
+		{
+			for (int i = 0; i < moveAdd.Length; i++)
+			{
+				moveAdd[i].SignToObject(this);
+				moveObject.Add(moveAdd[i]);
+			}
+		}
 
     }
 }

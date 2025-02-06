@@ -22,9 +22,19 @@ namespace LineRace
             collider = new Collider(this, new Vector2(0.4f, 0.4f));
         }
 
-        public override void BonusEction(GameObject @object)
-        {
-            @object = new FuelDecorates((Car)@object);
-        }
-    }
+		public override void BonusAction(GameObject @object)
+		{
+			Car car = @object as Car;
+			if (car != null)
+			{
+				@object = new FuelDecorates(car);
+
+				// Синхронизация состояния
+				if (NetworkManager.IsServer)
+				{
+					NetworkManager.SendBonusAction("Fuel", car.Id);
+				}
+			}
+		}
+	}
 }

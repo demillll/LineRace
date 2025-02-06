@@ -133,5 +133,22 @@ namespace LineRace
 
         }
 
-    }
+		public static void UpdateObjectsFromNetwork(string jsonData)
+		{
+			Car updatedCar = Car.Deserialize(jsonData);
+
+			// Найди машину по ID и обнови её состояние
+			foreach (var car in GameScene.Cars)
+			{
+				if (car.Id == updatedCar.Id)
+				{
+					car.Position = updatedCar.Position;
+					car.SetAnimation(updatedCar.CurrentAnimation);
+					break;
+				}
+			}
+		}
+
+
+	}
 }

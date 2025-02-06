@@ -11,6 +11,12 @@ namespace LineRace
         public BarrelDecorates(Car car) : base(car)
         {
             car.maxFuel += 25;
-        }
+
+			// Отправка обновления машины
+			if (NetworkManager.IsServer)
+			{
+				NetworkManager.SendCarUpdate(car.Id, car.Fuel, car.MaxFuel);
+			}
+		}
     }
 }

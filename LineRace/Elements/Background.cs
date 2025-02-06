@@ -62,8 +62,5 @@ namespace LineRace
 			r.DrawBitmap(bitmap, opacity, BitmapInterpolationMode.Linear);
 
 		}
-
-
-
 	}
 }

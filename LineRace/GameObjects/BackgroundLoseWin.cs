@@ -43,5 +43,12 @@ namespace LineRace
                 base.Draw(opacity, height, dx2d);
             }
         }
-    }
+
+		// Метод для активации экрана победы/проигрыша
+		public void Activate(bool isWin)
+		{
+			IsActiv = true;
+			// Дополнительная логика для активации соответствующего экрана
+		}
+	}
 }

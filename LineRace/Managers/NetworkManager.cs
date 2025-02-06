@@ -1,242 +1,172 @@
-﻿using AmmunitionLibrary;
-using GameLibrary;
-using GameLibrary.Dirigible;
-using LineRace;
-using OpenTK;
-using PrizesLibrary.Factories;
-using PrizesLibrary.Prizes;
-using SharpDX;
+﻿using SharpDX;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net.Sockets;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using TcpConnectionLibrary;
+using System.Text;
+using System.Threading;
 
 namespace LineRace
 {
-	public class NetworkManager
+	public static class NetworkManager
 	{
-		public event Action<string> OnNetworkConnectionLost;
+		private static TcpListener _serverListener;
+		private static TcpClient _client;
+		private static NetworkStream _stream;
+		private static BinaryReader _reader;
+		private static BinaryWriter _writer;
 
-		public List<Bullet> _firstPlayerBulletList = new List<Bullet>();
-		public List<Bullet> _secondPlayerBulletList = new List<Bullet>();
+		public static bool IsServer { get; set; } = false;
 
-		public AbstractDirigible CurrentPlayer { get; set; }
-		public AbstractDirigible NetworkPlayer { get; set; }
-		public Prize CurrentPrize { get; set; }
-
-		public List<Prize> CurrentPrizeList;
-
-		private ITcpNetworkConnection _networkConnection;
-
-		public Client Client { get; private set; }
-		public Server Server { get; private set; }
-
-		private NetworkData _currentNetworkData = new NetworkData();
-		public BulletData BulletData;
-
-		public PrizeFactory PrizeFactory { get; set; }
-
-		private GameManager _gameManager;
-		private UIManager _uiManager;
-		private TimeManager _timeManager;
-		private PlayerManager _playerManager;
-
-		private Random random;
-
-		public NetworkManager(GameManager gameManager, UIManager uiManager, TimeManager timeManager, PlayerManager playerManager)
+		// Метод для запуска сервера
+		public static void StartServer(int port)
 		{
-			_gameManager = gameManager;
-			_uiManager = uiManager;
-			_timeManager = timeManager;
-			_playerManager = playerManager;
-			_uiManager.SetGameMaangers(_gameManager);
+			_serverListener = new TcpListener(System.Net.IPAddress.Any, port);
+			_serverListener.Start();
+			Console.WriteLine("Server started...");
+			_client = _serverListener.AcceptTcpClient();
+			InitializeStream();
+			ListenForData();
 		}
 
-		public void SetNetworkStartData(ITcpNetworkConnection networkConnection, bool isLeftPlayer, int seed)
+		// Отправка данных о позиции объекта
+		public static void SendObjectPosition(GameObject gameObject)
 		{
-			_networkConnection = networkConnection;
+			// Пример отправки данных о позиции через сеть
+			var positionData = new { x = gameObject.position.center.X, y = gameObject.position.center.Y };
 
-			if (isLeftPlayer)
-			{
-				CurrentPlayer = _gameManager.FirstPlayer;
-				NetworkPlayer = _gameManager.SecondPlayer;
-			}
-			else
-			{
-				CurrentPlayer = _gameManager.SecondPlayer;
-				NetworkPlayer = _gameManager.FirstPlayer;
-			}
-			CurrentPrizeList = _gameManager.PrizeList;
-
-			random = new Random(seed);
-			PrizeFactory = new PrizeFactory(random);
-
-			_networkConnection.OnGetNetworkData += OnGetNetworkData;
+			// Здесь вы можете использовать конкретную сетевую библиотеку для отправки данных
 		}
 
-		private void OnGetNetworkData(object obj)
+		// Получение данных о позиции объекта
+		public static GameObject ReceiveObjectPosition()
 		{
-			try
+			// Пример получения данных о позиции объекта с сервера
+			// В реальном приложении данные будут поступать из сокета или другого сетевого протокола
+			return new GameObject
 			{
-
-				NetworkData networkData = (NetworkData)obj;
-
-				if (networkData is null)
-					return;
-
-				// Обновляем данные для сетевого игрока
-				NetworkPlayer.PositionCenter = new Vector2(networkData.PositionX, networkData.PositionY);
-
-				NetworkPlayer.Health = networkData.Health;
-				NetworkPlayer.Armor = networkData.Armor;
-				NetworkPlayer.Fuel = networkData.Fuel;
-				NetworkPlayer.Ammo = networkData.Ammo;
-				NetworkPlayer.Speed = networkData.Speed;
-				NetworkPlayer.NumberOfPrizesReceived = networkData.NumberOfPrizesReceived;
-				NetworkPlayer.IsTurnedLeft = networkData.IsTurningLeft;
-
-				// Обновляем текстуру сетевого игрока в зависимости от поворота
-
-				if (CurrentPlayer == _gameManager.FirstPlayer)
-				{
-					_playerManager.UpdatePlayerTexture();
-
-				}
-				else
-				{
-					_playerManager.UpdatePlayerTexture();
-				}
-
-
-				var bulletData = networkData.BulletData;
-
-				if (bulletData == null)
-				{
-					return;
-				}
-
-				// Создание и добавление пули, если это другая сторона
-				if (bulletData.ShooterID != CurrentPlayer.DirigibleID)
-				{
-					if (CurrentPlayer == _gameManager.FirstPlayer)
-					{
-						_secondPlayerBulletList.Add(_gameManager.CreateNewAmmo(bulletData));
-					}
-					else
-					{
-						_firstPlayerBulletList.Add(_gameManager.CreateNewAmmo(bulletData));
-					}
-				}
-				else
-				{
-					Console.WriteLine("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-				}
-
-			}
-			catch (Exception ex)
-			{
-				Console.WriteLine($"Error in OnGetNetworkData: {ex.Message}");
-			}
-		}
-
-
-
-		public async Task UpdateNetworkData()
-		{
-
-			var positionCenter = CurrentPlayer.PositionCenter;
-			_currentNetworkData.PositionX = positionCenter.X;
-			_currentNetworkData.PositionY = positionCenter.Y;
-
-			_currentNetworkData.BulletData = BulletData;
-
-			_currentNetworkData.Health = CurrentPlayer.Health;
-			_currentNetworkData.Armor = CurrentPlayer.Armor;
-			_currentNetworkData.Fuel = CurrentPlayer.Fuel;
-			_currentNetworkData.Ammo = CurrentPlayer.Ammo;
-			_currentNetworkData.Speed = CurrentPlayer.Speed;
-			_currentNetworkData.NumberOfPrizesReceived = CurrentPlayer.NumberOfPrizesReceived;
-			_currentNetworkData.IsTurningLeft = CurrentPlayer.IsTurnedLeft;
-
-			await _networkConnection.UpdateNetworkData(_currentNetworkData);
-
-			BulletData = null;
-		}
-
-
-		public async void StartServer()
-		{
-			Server = new Server();
-			int seed = new Random().Next();
-
-			Server.OnGetNetworkData += (_) => StartGame(seed, Server, true);
-			Server.OnConnectionLost += message => OnNetworkConnectionLost?.Invoke(message);
-
-			await Server.Start();
-			Console.WriteLine("Server started. Client connected.");
-
-			await Server.UpdateNetworkData<int>(seed);
-		}
-		public async void StartClient(TextBox ipAddressInput)
-		{
-			Client = new Client(ipAddressInput.Text);
-
-			Client.OnGetNetworkData += (obj) =>
-			{
-				Console.WriteLine("Event OnGetData triggered");
-				StartGame((int)obj, Client, false);
+				position = new Position { center = new Vector3(0, 0, 0) }, // Пример полученной позиции
+				sprite = new Sprite() // Пример полученной спрайт-анимации
 			};
-			Client.OnConnectionLost += message => OnNetworkConnectionLost?.Invoke(message);
-
-			await Client.Connect();
-			Console.WriteLine("Client connected successfully.");
-
-			await Client.GetNetworkData<int>();
 		}
 
-		private void StartGame(int seed, ITcpNetworkConnection networkConnection, bool isServer)
+		// Метод для подключения клиента к серверу
+		public static void StartClient(string serverAddress, int port)
 		{
-			try
+			_client = new TcpClient(serverAddress, port);
+			InitializeStream();
+		}
+
+		private static void InitializeStream()
+		{
+			_stream = _client.GetStream();
+			_reader = new BinaryReader(_stream);
+			_writer = new BinaryWriter(_stream);
+		}
+
+		// Метод для отправки данных
+		public static void SendData(string message)
+		{
+			if (_writer != null)
 			{
-				Console.WriteLine("StartGame is called");
-				networkConnection.UnsubscribeActions();
+				_writer.Write(message);
+				_writer.Flush();
+			}
+		}
 
-				Console.WriteLine("Calling SetNetworkStartData");
-				SetNetworkStartData(networkConnection, isServer, seed);
-				Console.WriteLine("SetNetworkStartData completed");
+		// Метод для получения данных
+		public static string ReceiveData()
+		{
+			if (_reader != null)
+			{
+				return _reader.ReadString();
+			}
+			return string.Empty;
+		}
 
-				// Проверяем, вызывается ли метод HideRoleSelection
-				Console.WriteLine("Calling HideRoleSelection");
-				if (Application.Current != null)
+		// Получение данных (для клиента)
+		private static void ListenForData()
+		{
+			new Thread(() =>
+			{
+				while (true)
 				{
-					Application.Current.Dispatcher.Invoke(() =>
+					string data = ReceiveData();
+					if (!string.IsNullOrEmpty(data))
 					{
-						_uiManager.HideRoleSelection();
-					});
-				}
-				else
-				{
-					Console.WriteLine("Application.Current is null. Cannot access Dispatcher.");
-				}
+						string[] parts = data.Split(':');
+						if (parts[0] == "Bonus")
+						{
+							string bonusType = parts[1];
+							int carId = int.Parse(parts[2]);
+							Car car = GameScene.GetCarById(carId);
 
-				Console.WriteLine("HideRoleSelection completed");
+							if (bonusType == "Fuel")
+							{
+								car = new FuelDecorates(car);
+							}
+							else if (bonusType == "Barrel")
+							{
+								car = new BarrelDecorates(car);
+							}
 
-				Console.WriteLine("Role Selection is Hided");
-				Application.Current.Dispatcher.Invoke(() =>
-				{
-					_timeManager.LaunchTimers(this);
-					Console.WriteLine("Timers started in UI thread");
-				});
-				Console.WriteLine("Timers started");
-			}
-			catch (Exception ex)
+							// Обновляем машину на сервере (если клиент)
+							if (!IsServer)
+							{
+								GameScene.GetCarById(carId).Fuel = car.Fuel;
+								GameScene.GetCarById(carId).MaxFuel = car.MaxFuel;
+							}
+						}
+
+						if (parts[0] == "CarUpdate")
+						{
+							int carId = int.Parse(parts[1]);
+							float fuel = float.Parse(parts[2]);
+							float maxFuel = float.Parse(parts[3]);
+
+							Car car = GameScene.GetCarById(carId);
+							car.Fuel = fuel;
+							car.MaxFuel = maxFuel;
+						}
+					}
+				}
+			}).Start();
+		}
+
+		// Отправка действия бонуса
+		public static void SendBonusAction(string bonusType, int carId)
+		{
+			if (IsServer)
 			{
-				Console.WriteLine($"Error in StartGame: {ex.Message}");
-				Console.WriteLine(ex.StackTrace);
+				string message = $"Bonus:{bonusType}:{carId}";
+				SendData(message);
 			}
+		}
+
+		// Отправка обновлений о машине
+		public static void SendCarUpdate(int carId, float fuel, float maxFuel)
+		{
+			if (IsServer)
+			{
+				string message = $"CarUpdate:{carId}:{fuel}:{maxFuel}";
+				SendData(message); // отправляем данные на клиент
+			}
+		}
+		public static Car GetCarById(int carId)
+		{
+			if (carId == Car1.Id) return Car1;
+			if (carId == Car2.Id) return Car2;
+			return null;
+		}
+
+		// Остановка сервера/клиента
+		public static void Stop()
+		{
+			_reader?.Close();
+			_writer?.Close();
+			_stream?.Close();
+			_client?.Close();
+			_serverListener?.Stop();
 		}
 	}
 }

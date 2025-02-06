@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using SharpDX;
 using SharpDX.Direct2D1;
 using SharpDX.DirectInput;
@@ -20,12 +21,14 @@ namespace LineRace
         /// Переменная для игрока
         /// </summary>
         public bool IsPlayer;
-        
 
-        /// <summary>
-        /// переменная топливо
-        /// </summary>
-        public float fuel = 100;
+		public string CurrentAnimation { get; set; }
+
+		public int Id { get; set; }
+		/// <summary>
+		/// переменная топливо
+		/// </summary>
+		public float fuel = 100;
         /// <summary>
         /// переменная объема топливного бака
         /// </summary>
@@ -139,5 +142,33 @@ namespace LineRace
 				m1.M31 * m2.M12 + m1.M32 * m2.M22 + m2.M32
 			);
 		}
+
+		public string GetState()
+		{
+			return $"{position.center.X},{position.center.Y},{position.angle},{Fuel},{IsCrash}";
+		}
+
+		public void SetState(string state)
+		{
+			var parts = state.Split(',');
+			if (parts.Length == 5)
+			{
+				position.center.X = float.Parse(parts[0]);
+				position.center.Y = float.Parse(parts[1]);
+				position.angle = float.Parse(parts[2]);
+				Fuel = float.Parse(parts[3]);
+				IsCrash = bool.Parse(parts[4]);
+			}
+		}
+		public string Serialize()
+		{
+			return JsonConvert.SerializeObject(this);
+		}
+
+		public static Car Deserialize(string json)
+		{
+			return JsonConvert.DeserializeObject<Car>(json);
+		}
+
 	}
 }

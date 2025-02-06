@@ -8,83 +8,92 @@ using SharpDX.DirectInput;
 
 namespace LineRace
 {
-    class MoveYLine : MoveObject
-    {
-        public float speed;
+	class MoveYLine : MoveObject
+	{
+		public float speed;
 
-        private Key MoveUp;
-        private Key MoveDown;
+		private Key MoveUp;
+		private Key MoveDown;
 
-        private string Animation;
-        
+		private string Animation;
 
+		public MoveYLine(Key MoveUp, Key MoveDown, string Animation)
+		{
+			this.MoveUp = MoveUp;
+			this.MoveDown = MoveDown;
+			this.Animation = Animation;
+			speed = 0f;
+		}
 
-        public MoveYLine(Key MoveUp, Key MoveDown, string Animation)
-        {
-            this.MoveUp = MoveUp;
-            this.MoveDown = MoveDown;
-            this.Animation = Animation;
-            speed = 0f;
-          
-        }
+		public override void Update(List<GameObject> gameObjects)
+		{
+			inputDirectX.UpdateKeyboardState();
+			@object.position.center.Y += speed;
 
-        public override void Update(List<GameObject> gameObjects)
-        {
-            inputDirectX.UpdateKeyboardState();
-            @object.position.center.Y += speed;
+			if (inputDirectX.KeyboardUpdated)
+			{
+				if (inputDirectX.KeyboardState.IsPressed(MoveUp) && !inputDirectX.KeyboardState.IsPressed(MoveDown))
+				{
+					speed += 0.00003f;
+					@object.sprite.SetAnimation(Animation);
+				}
 
-            
-           
+				if (inputDirectX.KeyboardState.IsPressed(MoveDown) && !inputDirectX.KeyboardState.IsPressed(MoveUp))
+				{
+					speed -= 0.00003f;
+					@object.sprite.SetAnimation(Animation);
+				}
 
-            
+				if (!inputDirectX.KeyboardState.IsPressed(MoveUp))
+				{
+					if (speed > 0)
+					{
+						speed -= 0.00003f;
+					}
+					else if (speed < 0)
+					{
+						speed = 0;
+					}
+				}
 
-            if (inputDirectX.KeyboardUpdated)
-            {
-                if (inputDirectX.KeyboardState.IsPressed(MoveUp) && !inputDirectX.KeyboardState.IsPressed(MoveDown) )
-                {
-                    speed += 0.00003f;
-                    @object.sprite.SetAnimation(Animation);
+				if (@object.position.center.Y > 1.4f)
+				{
+					@object.position.center.Y = -0.2f;
+				}
 
-                }
-                if (inputDirectX.KeyboardState.IsPressed(MoveDown) && !inputDirectX.KeyboardState.IsPressed(MoveUp))
-                {
-                    speed -= 0.00003f;
-                    @object.sprite.SetAnimation(Animation);
-                    
+				if (@object.position.center.Y < -0.2f)
+				{
+					@object.position.center.Y = 1.4f;
+				}
 
-                }
+				// Сетевые операции для отправки и получения данных
+				SendPositionData();
+				ReceivePositionData();
+			}
+		}
 
-                if (!inputDirectX.KeyboardState.IsPressed(MoveUp))
-                {
-                    if (speed > 0)
-                    {
-                        speed -= 0.00003f;
-                    }
-                    else if (speed < 0)
-                    {
-                        speed = 0;
-                    }
-                }
+		public override void SendPositionData()
+		{
+			if (NetworkManager.IsServer)
+			{
+				// Отправка данных о позиции объекта
+				var positionData = new { x = @object.position.center.X, y = @object.position.center.Y, speed = this.speed };
+				NetworkManager.SendObjectPosition(positionData);  // Метод для отправки данных через сеть
+			}
+		}
 
-                
-                if (@object.position.center.Y > 1.4f)
-                { 
-                    {
-                    @object.position.center.Y = -0.2f;
-
-                    }
-                }
-                if (@object.position.center.Y < -0.2f)
-                {
-                    {
-                        @object.position.center.Y = 1.4f;
-
-                    }
-                }
-
-            }
-
-        }
-
-    }
+		public override void ReceivePositionData()
+		{
+			if (!NetworkManager.IsServer)
+			{
+				// Получение данных о позиции объекта
+				var positionData = NetworkManager.ReceiveObjectPosition();
+				if (positionData != null)
+				{
+					@object.position.center = new Vector3(positionData.x, positionData.y, 0);
+					this.speed = positionData.speed;
+				}
+			}
+		}
+	}
 }

@@ -70,10 +70,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Managers\GameManager.cs" />
-    <Compile Include="Managers\RenderManager.cs" />
-    <Compile Include="Managers\TextureManager.cs" />
-    <Compile Include="Managers\UIManager.cs" />
     <Compile Include="TcpConnection\Client.cs" />
     <Compile Include="Components\Collider.cs" />
     <Compile Include="Components\GameAnimation.cs" />

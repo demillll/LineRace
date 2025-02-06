@@ -15,5 +15,10 @@ namespace LineRace
         {
             this.car = car;
         }
-    }
+		// Метод для отправки обновлений о состоянии машины
+		public void SendCarUpdate()
+		{
+			NetworkManager.SendCarUpdate(car.Id, car.Fuel, car.MaxFuel);
+		}
+	}
 }
