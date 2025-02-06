@@ -80,7 +80,6 @@
     <Compile Include="Multiplayer\Server.cs" />
     <Compile Include="Object\Collider.cs" />
     <Compile Include="Engine\Sprite.cs" />
-    <Compile Include="GameObjects\BackgroundLoseWin.cs" />
     <Compile Include="Object\Background.cs" />
     <Compile Include="Engine\TimeHelper.cs" />
     <Compile Include="Bonuses\Bonus\Bonus.cs" />
@@ -94,22 +93,18 @@
     <Compile Include="Object\GameObject.cs" />
     <Compile Include="Object\Line.cs" />
     <Compile Include="GameScene.cs" />
-    <Compile Include="Move\MoveBonus.cs" />
-    <Compile Include="Move\MoveCarY.cs" />
-    <Compile Include="Move\MoveFinishLine.cs" />
-    <Compile Include="Move\MoveObject.cs" />
-    <Compile Include="Move\MoveYLine.cs" />
-    <Compile Include="Move\MoveCarX.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="ClassDiagram1.cd" />
-    <None Include="ClassDiagram2.cd" />
-    <None Include="ClassDiagram3.cd" />
-    <None Include="ClassDiagram4.cd" />
-    <None Include="ClassDiagram5.cd" />
-    <None Include="ClassDiagram6.cd" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Sprites\Background.png" />
+    <Content Include="Sprites\Car1.png" />
+    <Content Include="Sprites\Car2.png" />
+    <Content Include="Sprites\Car3.png" />
+    <Content Include="Sprites\image2.png" />
+    <Content Include="Sprites\Line1.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\System.Text.Json.6.0.0\build\System.Text.Json.targets" Condition="Exists('..\packages\System.Text.Json.6.0.0\build\System.Text.Json.targets')" />
