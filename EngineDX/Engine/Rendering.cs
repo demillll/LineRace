@@ -8,7 +8,6 @@ using SharpDX.Windows;
 using SharpDX.Direct2D1;
 using SharpDX.WIC;
 using SharpDX.DirectWrite;
-
 using Direct2D1 = SharpDX.Direct2D1;
 using WIC = SharpDX.WIC;
 using RenderTargetFactory = SharpDX.Direct2D1.Factory;
