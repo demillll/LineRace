@@ -1,50 +1,57 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SharpDX;
+﻿using SharpDX;
 using SharpDX.Direct2D1;
 
-namespace LineRace
-{//код содержит определение класса "Sprite", который представляет собой игровой спрайт. Класс имеет следующие поля:
+namespace LineRace.Engine
+{
+	public class Sprite
+	{
 
-    public class Sprite
-    {//"positionOfCenter" - вектор, который содержит координаты центра спрайта в игровом пространстве;
-        // Положение центра спрайта в игровом пространстве (20 единиц измерения на высоту поля отображения)
-        private Vector2 positionOfCenter;
-        public Vector2 PositionOfCenter { get => positionOfCenter; set => positionOfCenter = value; }
-        //"animation" - объект класса "GameAnimation", который представляет анимацию спрайта;
-        public GameAnimation animation { get; set; }
-        //"defaultAnimation" - объект класса "GameAnimation", который содержит анимацию по умолчанию.
-        public GameAnimation defaultAnimation { get; set; }
+		/// <summary>
+		/// Инфаструктурный объект
+		/// </summary>
+		private Rendering rendering;
+		/// <summary>
+		/// Индекс кпртинки спрайта в коллекции
+		/// </summary>
+		private int bitmapIndex;
+		/// <summary>
+		/// Ширина
+		/// </summary>
+		public float width;
+		/// <summary>
+		/// Высота
+		/// </summary>
+		public float height;
 
-        // В конструкторе инициализируем поля
-        public Sprite(string animationTitle)
-        {
-            SetAnimation(animationTitle);
-            defaultAnimation = animation;
-            positionOfCenter.X = animation.GetCurrentSprite(this).Size.Width / 2;
-            positionOfCenter.Y = animation.GetCurrentSprite(this).Size.Height / 2;
-        }
+		public Sprite(Rendering rendering, int bitmapIndex)
+		{
+			this.rendering = rendering;
+			this.bitmapIndex = bitmapIndex;
+			width = rendering.Bitmaps[bitmapIndex].Size.Width;
+			height = rendering.Bitmaps[bitmapIndex].Size.Height;
+		}
 
-    
-        public void SetAnimation(string title)
-        {
-            if (GameAnimation.animations.ContainsKey(title))
-            {
-                if (GameAnimation.animations[title].endless == false)
-                {
-                    this.animation = GameAnimation.animations[title];
-                }
-                else
-                {
-                    this.animation = GameAnimation.animations[title];
-                    this.defaultAnimation = GameAnimation.animations[title];
-                }
-            }
-
-        }
-    }
+		/// <summary>
+		/// Отрисовка спрайта
+		/// </summary>
+		/// <param name="translation"></param>
+		/// <param name="scaleX"></param>
+		/// <param name="scaleY"></param>
+		/// <param name="angle"></param>
+		/// <param name="scaleTranclation"></param>
+		/// <param name="centerRotation"></param>
+		/// <param name="opacity"></param>
+		public void Draw(Vector2 translation, float scaleX, float scaleY, float angle, Vector2 scaleTranclation, Vector2 centerRotation, float opacity)
+		{
+			// Получаем из инфраструктурного объекта "цель" отрисовки
+			WindowRenderTarget renderTarget = rendering.RenderTarget;
+			renderTarget.Transform = Matrix3x2.Scaling(scaleX, scaleY, scaleTranclation) *
+				Matrix3x2.Rotation(-angle, centerRotation) *
+				Matrix3x2.Translation(translation);
+			// Нарисовываемся
+			SharpDX.Direct2D1.Bitmap bitmap = rendering.Bitmaps[bitmapIndex];
+			renderTarget.DrawBitmap(bitmap, opacity, SharpDX.Direct2D1.BitmapInterpolationMode.Linear);
+		}
+	}
 }
 

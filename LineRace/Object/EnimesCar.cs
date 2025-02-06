@@ -8,18 +8,21 @@ using SharpDX;
 using SharpDX.DirectInput;
 using System.Diagnostics;
 using LineRace.Multiplayer;
+using System.Drawing;
 
 namespace LineRace.Object
 {
-	public class Line : GameObject
+	public class EnimesCar : GameObject
 	{
+		Random random = new Random();
+		RenderingApp renderingApp;
 		/// <summary>
 		/// Массив клавиш для управления танком назад[0], вперёд[1], угол пушки вверх[2], угол пушки вниз[3], выстрел[4]
 		/// </summary>
 		public PlayerProperities Property { get; set; }
 		public bool IsRight { get; set; }
 		/// <summary>
-		/// Массив клавиш для управления танком назад[0], вперёд[1], угол пушки вверх[2], угол пушки вниз[3], выстрел[4]
+		/// Массив клавиш для управления машиной назад[0], вперёд[1], угол пушки вверх[2], угол пушки вниз[3], выстрел[4]
 		/// </summary>
 		private readonly Key[] keys;
 
@@ -30,7 +33,9 @@ namespace LineRace.Object
 
 		public virtual Vector2 MAX_Line { get; set; }
 		public virtual Vector2 MIN_Line { get; set; }
-		protected Line() { }
+		protected EnimesCar()
+		{
+		}
 		/// <summary>
 		/// Конструктор класса Tank
 		/// </summary>
@@ -41,7 +46,7 @@ namespace LineRace.Object
 		/// <param name="gun">Пушка</param>
 		/// <param name="isRight">Правый или левый танк</param>
 		/// <param name="keys">Массив клавиш для управления: назад[0], вперёд[1], угол пушки вверх[2], угол пушки вниз[3], выстрел[4]</param>
-		public Line(Vector2 position, Vector2 size, float angle, Sprite sprite, bool isRight, Key[] keys, bool isActive)
+		public EnimesCar(Vector2 position, Vector2 size, float angle, Sprite sprite, bool isRight, Key[] keys, bool isActive)
 			: base(position, size, angle, sprite, isActive)
 		{
 
@@ -49,7 +54,7 @@ namespace LineRace.Object
 			Speed = new Vector2(0, 6f);
 			MAX_Line = new Vector2(400, 500);
 			MIN_Line = new Vector2(400, 0);
-
+			IsRight = isRight;
 
 			IsMoving = 0;
 
@@ -61,7 +66,7 @@ namespace LineRace.Object
 
 		}
 		/// <summary>
-		/// Управление линиями
+		/// Управление танком
 		/// </summary>
 		/// <param name="keyboardState">Состояние клавиатуры</param>
 		public virtual void Control(KeyboardState keyboardState)
@@ -85,80 +90,53 @@ namespace LineRace.Object
 				IsMoving = 0;
 			}
 
+			if (Time.CurrentTime > 4)
+			{
+
+				Time.Reset();
+			}
+
 			if (Position.Y < 100)
 			{
-				Position = new Vector2(Position.X, 900);
+				if (Time.CurrentTime > 4)
+				{
+					Position = new Vector2(Position.X, 900);
+					Time.Reset();
+				}
+
 			}
 			if (Position.Y > 900)
 			{
-				Position = new Vector2(Position.X, 100);
+				if (Time.CurrentTime > 4)
+				{
+					Position = new Vector2(IsRight ? random.Next(500, 1410) : random.Next(-200, 600), -400);
+					Time.Reset();
+				}
+
 			}
+
 
 
 		}
 
-		public void LinePosition()
-		{
-			//1
-			if (IsRight ? Position.X <= 200 : Position.X <= 1910 - Size.X)
-			{
-				if (Position.Y > 900)
-				{
-					Position = new Vector2(400, 100);
-				}
 
-				if (Position.Y < 100)
-				{
-					Position = new Vector2(400, 900);
-				}
-			}
-			//2
-			else if (IsRight ? Position.X >= 400 : Position.X >= 0)
-			{
-				if (Position.Y > 900)
-				{
-					Position = new Vector2(200, 100);
-				}
-
-				if (Position.Y < 100)
-				{
-					Position = new Vector2(200, 900);
-				}
-			}
-			//3
-			else if (IsRight ? Position.X >= 940 : Position.X >= 100)
-			{
-				if (Position.Y > 900)
-				{
-					Position = new Vector2(1000, 100);
-				}
-
-				if (Position.Y < 100)
-				{
-					Position = new Vector2(1000, 900);
-				}
-			}
-			//4
-			else if (IsRight ? Position.X >= 1100 : Position.X <= 990)
-			{
-				if (Position.Y > 900)
-				{
-					Position = new Vector2(1400, 100);
-				}
-
-				if (Position.Y < 100)
-				{
-					Position = new Vector2(1400, 900);
-				}
-			}
-		}
 
 		/// <summary>
 		/// Обновление состояния объекта
 		/// </summary>
-		public virtual void Update()
+		public virtual void Update(List<GameObject> gameObjects)
 		{
+			foreach (var obj in gameObjects)
+			{
+				if (obj is Car && (Position - obj.Position).Length() < 50)
+				{
+					Speed = new Vector2(0, 0);
 
+					((Car)obj).IsCrusht = true;
+
+				}
+
+			}
 		}
 
 

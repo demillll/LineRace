@@ -1,82 +1,79 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Diagnostics;
 
 namespace LineRace
 {
-    public static class TimeHelper
-    {
-        // Таймер
-        private static Stopwatch _watch;
+	public static class Time
+	{
+		/// <summary>
+		/// Часы
+		/// </summary>
+		private static Stopwatch watch;
+		/// <summary>
+		/// Прошлое время кадра
+		/// </summary>
+		private static long previousTicks;
+		public static float timing;
+		/// <summary>
+		/// Количество кадров в секунду
+		/// </summary>
+		public static float fps;
+		private static long previousFPSMeasurementTime;
+		private static int counter;
+		/// <summary>
+		/// Текущее время с запуска приложения
+		/// </summary>
+		public static float CurrentTime { get; private set; }
 
-        // Счетчик кадров
-        private static int _counter = 0;
-        // Количество кадров за прошлую секунду
-        private static int _fps = 0;
-        public static int FPS { get => _fps; }
+		/// <summary>
+		/// Разница во времени между кадрами
+		/// </summary>
+		public static float DeltaTime { get; private set; }
 
-        // Момент времени при прошлом обновлении значения FPS
-        private static long _previousFPSMeasurementTime;
-
-        // Количество тиков на момент прошлого кадра
-        private static long _previousTicks;
-
-        // Текущее время в секундах
-        private static float _time;
-        public static float Time { get => _time; }
-
-        // Сколько времени прошло с прошлого кадра
-        private static float _dT;
-        public static float dT { get => _dT; }
-
-        // В конструкторе создаем экземпляр таймера и выполняем сброс
-        static TimeHelper()
-        {
-            _watch = new Stopwatch();
-            Reset();
-        }
-
-        // Обновление подсчитываемых значений
-        // Должен вызываться в начале каждого кадра
-        public static void Update()
-        {
-            // Текущее значение счетчика тиков
-            long ticks = _watch.Elapsed.Ticks;
-            // Вычисляем текущее время и интервал между текущим и прошлым кадрами
-            _time = (float)ticks / TimeSpan.TicksPerSecond;
-            _dT = (float)(ticks - _previousTicks) / TimeSpan.TicksPerSecond;
-            // Запоминаем текущее значение счетчика тиков для вычислений в будущем кадре
-            _previousTicks = ticks;
-
-            // Инкремент счетчика кадров
-            _counter++;
-            // Если истекла секунда, то обновляем значение FPS и фиксируем момент времени для отсчета следующей секунды
-            if (_watch.ElapsedMilliseconds - _previousFPSMeasurementTime >= 1000)
-            {
-                _fps = _counter;
-                _counter = 0;
-                _previousFPSMeasurementTime = _watch.ElapsedMilliseconds;
-            }
-        }
-
-        // Сброс таймера и счетчиков
-        public static void Reset()
-        {
-            _watch.Reset();
-            _counter = 0;
-            _fps = 0;
-            _watch.Start();
-            _previousFPSMeasurementTime = _watch.ElapsedMilliseconds;
-            _previousTicks = _watch.Elapsed.Ticks;
-        }
-		// Синхронизация времени
-		public static void SetTime(float serverTime)
+		/// <summary>
+		/// Конструктори статического класса
+		/// </summary>
+		static Time()
 		{
-			_time = serverTime;
-			_previousTicks = (long)(serverTime * TimeSpan.TicksPerSecond);
+			watch = new Stopwatch();
+			Reset();
+		}
+
+		/// <summary>
+		/// Обновление подсчитанных значений
+		/// </summary>
+		public static void UpdateTime()
+		{
+			long ticks = watch.Elapsed.Ticks;
+
+			CurrentTime = (float)ticks / TimeSpan.TicksPerSecond;
+			DeltaTime = (float)(ticks - previousTicks) / TimeSpan.TicksPerSecond;
+			timing = DeltaTime;
+			previousTicks = ticks;
+
+			counter++;
+			// Если истекла секунда, то обновляем значение FPS и фиксируем момент времени для отсчета следующей секунды
+			if (watch.ElapsedMilliseconds - previousFPSMeasurementTime >= 1000)
+			{
+				fps = counter;
+				counter = 0;
+				previousFPSMeasurementTime = watch.ElapsedMilliseconds;
+			}
+
+		}
+
+		/// <summary>
+		/// Сброс таймера и счетчика
+		/// </summary>
+		public static void Reset()
+		{
+			watch.Reset();
+			fps = 0;
+			counter = 0;
+			watch.Start();
+			previousFPSMeasurementTime = watch.ElapsedMilliseconds;
+			previousTicks = watch.Elapsed.Ticks;
 		}
 	}
 }
+

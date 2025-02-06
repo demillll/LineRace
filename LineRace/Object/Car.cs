@@ -1,174 +1,89 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
+﻿using LineRace.Engine;
 using SharpDX;
-using SharpDX.Direct2D1;
 using SharpDX.DirectInput;
-using SharpDX.Mathematics.Interop;
+using System.Diagnostics;
+using LineRace.Multiplayer;
+using System.Drawing;
 
-namespace LineRace
+namespace LineRace.Object
 {
-   public class Car : GameObject
-    {
-        /// <summary>
-        /// Переменная для колизии
-        /// </summary>
-        public bool IsCrash;
-        /// <summary>
-        /// Переменная для игрока
-        /// </summary>
-        public bool IsPlayer;
-
-		public string CurrentAnimation { get; set; }
-
-		public int Id { get; set; }
+	class Car : GameObject
+	{
 		/// <summary>
-		/// переменная топливо
+		/// Имя применяемого бонуса
 		/// </summary>
-		public float fuel = 100;
-        /// <summary>
-        /// переменная объема топливного бака
-        /// </summary>
-        public float maxFuel = 100;
-      
-        /// <summary>
-        /// Вызов базового класса
-        /// </summary>
-        public Car() : base()
-        {
-            
-        }
-        /// <summary>
-        /// конструктор
-        /// </summary>
-        /// <param name="sprite">параметр класса Sprite</param>
-        /// <param name="startPos">стартовая позиция объекта</param>
-        /// <param name="scale">масштаб объекта</param>
-        /// <param name="site">Сторона игрока</param>
-        /// <param name="IsPlayer">Игрок</param>
-        public Car(Sprite sprite, Vector2 startPos, float scale,bool site,bool IsPlayer = false) : base(sprite, startPos, scale, site)
-        {
-            collider = new Collider(this, new Vector2(1f, 1f));
-          
-            
-            this.IsPlayer = IsPlayer;
-           
-        }
-
+		public virtual string BonusName { get; set; }
 		/// <summary>
-		/// Конструктор класса
+		/// Скорость передвижения
 		/// </summary>
-		/// <param name="sprite">Параметр класса Sprite</param>
-		/// <param name="startPos">Стартовая позиция</param>
-		/// <param name="scale">Маштаб</param>
-		/// <param name="site">Сторона игрока</param>
-		public override void Draw(float opacity, float height, Direct2D dx2d)
+		public virtual Vector2 Speed { get; set; }
+		/// <summary>
+		/// Является ли этот танк правым
+		/// </summary>
+
+		public bool IsCrusht { get; set; }
+
+		public PlayerProperities Property { get; set; }
+		public bool IsRight { get; set; }
+		/// <summary>
+		/// Массив клавиш для управления танком назад[0], вперёд[1], угол пушки вверх[2], угол пушки вниз[3], выстрел[4]
+		/// </summary>
+		private readonly Key[] keys;
+
+		public Packet packet = new Packet(1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 100, 100);
+
+		protected Car() { }
+		/// <summary>
+		/// Конструктор класса Tank
+		/// </summary>
+		/// <param name="position">Позиция танка на игровом поле</param>
+		/// <param name="size">Размер танка в пикселях</param>
+		/// <param name="angle">Угол танка</param>
+		/// <param name="sprite">Спрайт</param>
+		/// <param name="isRight">Правый или левый танк</param>
+		/// <param name="keys">Массив клавиш для управления: назад[0], вперёд[1], угол пушки вверх[2], угол пушки вниз[3], выстрел[4]</param>
+		public Car(Vector2 position, Vector2 size, float angle, Sprite sprite, bool isRight, Key[] keys, bool isActive)
+			: base(position, size, angle, sprite, isActive)
 		{
-			// Если есть связанные объекты, обновляем их состояние
-			if (moveObject != null)
+			IsRight = isRight;
+			this.keys = keys;
+			Speed = new Vector2(6f, 0);
+
+			Property = new PlayerProperities()
 			{
-				foreach (var script in moveObject)
-				{
-					script.Update(gameObjects);
-				}
-			}
-
-			SharpDX.Direct2D1.Bitmap bitmap = sprite.animation.GetCurrentSprite(sprite);
-
-			// Центр трансляции
-			var translation = new Vector2(
-				sprite.PositionOfCenter.X / bitmap.Size.Width + position.center.X * position.scale,
-				sprite.PositionOfCenter.Y / bitmap.Size.Height + position.center.Y * position.scale
-			);
-
-			// Создаем матрицы преобразований вручную
-			var rotationMatrix = new RawMatrix3x2(
-				(float)Math.Cos(-position.angle), (float)Math.Sin(-position.angle),
-				(float)-Math.Sin(-position.angle), (float)Math.Cos(-position.angle),
-				0, 0
-			);
-
-			var scalingMatrix = new RawMatrix3x2(
-				position.scale * scale / bitmap.Size.Width, 0,
-				0, position.scale * scale / bitmap.Size.Height,
-				0, 0
-			);
-
-			var translationMatrix = new RawMatrix3x2(
-				1, 0,
-				0, 1,
-				translation.X * scale, translation.Y * scale
-			);
-
-			// Итоговая трансформация (умножение матриц)
-			var finalMatrix = MultiplyMatrix3x2(MultiplyMatrix3x2(rotationMatrix, scalingMatrix), translationMatrix);
-
-			WindowRenderTarget renderTarget = dx2d.RenderTarget;
-			renderTarget.Transform = finalMatrix;
-
-			// Рисуем объект
-			renderTarget.DrawBitmap(bitmap, opacity, BitmapInterpolationMode.NearestNeighbor);
+				Force = 20,
+				Angle = -45,
+			};
 		}
-
 		/// <summary>
-		/// Метод для управления топливом
+		/// Управление танком
 		/// </summary>
-		public float Fuel
+		/// <param name="keyboardState">Состояние клавиатуры</param>
+		public virtual void Control(KeyboardState keyboardState)
 		{
-			get { return fuel; }
-			set
+			if (keyboardState.IsPressed(keys[0]) && (IsRight ? Position.X >= 600 : Position.X >= -200))
 			{
-				fuel = value;
-				if (fuel > maxFuel) fuel = maxFuel;
-				if (fuel < 0) fuel = 0;
+				Position -= Speed;
+			}
+			if (keyboardState.IsPressed(keys[1]) && (IsRight ? Position.X <= 1910 - Size.X : Position.X <= 500))
+			{
+				Position += Speed;
 			}
 		}
-
 		/// <summary>
-		/// Вспомогательный метод для умножения матриц 3x2
+		/// Обновление состояния объекта
 		/// </summary>
-		private RawMatrix3x2 MultiplyMatrix3x2(RawMatrix3x2 m1, RawMatrix3x2 m2)
+		public virtual void Update()
 		{
-			return new RawMatrix3x2
-			(
-				m1.M11 * m2.M11 + m1.M12 * m2.M21,
-				m1.M11 * m2.M12 + m1.M12 * m2.M22,
-				m1.M21 * m2.M11 + m1.M22 * m2.M21,
-				m1.M21 * m2.M12 + m1.M22 * m2.M22,
-				m1.M31 * m2.M11 + m1.M32 * m2.M21 + m2.M31,
-				m1.M31 * m2.M12 + m1.M32 * m2.M22 + m2.M32
-			);
 		}
 
-		public string GetState()
-		{
-			return $"{position.center.X},{position.center.Y},{position.angle},{Fuel},{IsCrash}";
-		}
 
-		public void SetState(string state)
+		public virtual void ReadPacketData(Packet packet)
 		{
-			var parts = state.Split(',');
-			if (parts.Length == 5)
+			if (packet != null)
 			{
-				position.center.X = float.Parse(parts[0]);
-				position.center.Y = float.Parse(parts[1]);
-				position.angle = float.Parse(parts[2]);
-				Fuel = float.Parse(parts[3]);
-				IsCrash = bool.Parse(parts[4]);
+				Position = new Vector2(packet.PositionX, packet.PositionY);
 			}
 		}
-		public string Serialize()
-		{
-			return JsonConvert.SerializeObject(this);
-		}
-
-		public static Car Deserialize(string json)
-		{
-			return JsonConvert.DeserializeObject<Car>(json);
-		}
-
 	}
 }
