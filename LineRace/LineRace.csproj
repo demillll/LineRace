@@ -70,18 +70,21 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Bonuses\Factory\SlowingFactory.cs" />
+    <Compile Include="Bonuses\Factory\SpeedBonusFactory.cs" />
+    <Compile Include="Engine\InputHandler.cs" />
     <Compile Include="TcpConnection\Client.cs" />
     <Compile Include="Components\Collider.cs" />
     <Compile Include="Components\GameAnimation.cs" />
     <Compile Include="Components\Position.cs" />
-    <Compile Include="Components\Sprite.cs" />
+    <Compile Include="Engine\Sprite.cs" />
     <Compile Include="Elements\AddImages.cs" />
     <Compile Include="Elements\TextRender.cs" />
     <Compile Include="GameObjects\BackgroundLoseWin.cs" />
     <Compile Include="Elements\Background.cs" />
     <Compile Include="Elements\Direct2D.cs" />
     <Compile Include="Elements\InputDirectX.cs" />
-    <Compile Include="Elements\TimeHelper.cs" />
+    <Compile Include="Engine\TimeHelper.cs" />
     <Compile Include="Bonuses\Bonus\Bonus.cs" />
     <Compile Include="Bonuses\Bonus\BonusBarrel.cs" />
     <Compile Include="Bonuses\Bonus\BonusFuel.cs" />
