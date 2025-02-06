@@ -79,11 +79,11 @@ namespace LineRace
             Car Car4 = new Car(new Sprite("Car3"), new Vector2(1.65f, -0.65f), GameScene.CarScale, true, false);
             Car4.AddMove(new MoveCarY(Key.Up, Key.Down, "Car3",4));
 
-            FactoryBonus.CreateBonusLeft<BonusFuel>();
-            FactoryBonus.CreateBonusLeft<BonusBarrel>();
+            BonusFactory.CreateBonusLeft<BonusFuel>();
+            BonusFactory.CreateBonusLeft<BonusBarrel>();
 
-            FactoryBonus.CreateBonusRight<BonusFuel>();
-            FactoryBonus.CreateBonusRight<BonusBarrel>();
+            BonusFactory.CreateBonusRight<BonusFuel>();
+            BonusFactory.CreateBonusRight<BonusBarrel>();
 
             Car FinishRight = new Car(new Sprite("Finish"), new Vector2(1.50f, -50.0f), GameScene.CarScale, true, false);
             FinishRight.AddMove(new MoveFinishLine(Key.Up, Key.Down, "Finish"));

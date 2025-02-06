@@ -9,7 +9,7 @@ using SharpDX.DirectInput;
 
 namespace LineRace
 {
-    public static class FactoryBonus
+    public static class BonusFactory
     {
 		public static Bonus CreateBonusLeft<T>() where T : Bonus
 		{
