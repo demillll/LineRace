@@ -1,13 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.12.35527.113 d17.12
+VisualStudioVersion = 17.12.35527.113
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WpfApp_Game", "LineRaceWindow\WpfApp_Game.csproj", "{9AB5D6EA-6419-423B-90C6-5644E898C254}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LineRace", "EngineDX\LineRace.csproj", "{AD48271C-C472-4F8C-8E52-AF7DA131658E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LineRace", "LineRace\LineRace.csproj", "{AD48271C-C472-4F8C-8E52-AF7DA131658E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTestы", "UnitTestы\UnitTestы.csproj", "{AA6B4E6F-9952-4912-97FA-84AEC58AE75B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTestы", "UnitTest\UnitTestы.csproj", "{AA6B4E6F-9952-4912-97FA-84AEC58AE75B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WpfApp_Game", "WpfApp_Game\WpfApp_Game.csproj", "{9AB5D6EA-6419-423B-90C6-5644E898C254}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,10 +15,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{9AB5D6EA-6419-423B-90C6-5644E898C254}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9AB5D6EA-6419-423B-90C6-5644E898C254}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9AB5D6EA-6419-423B-90C6-5644E898C254}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9AB5D6EA-6419-423B-90C6-5644E898C254}.Release|Any CPU.Build.0 = Release|Any CPU
 		{AD48271C-C472-4F8C-8E52-AF7DA131658E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{AD48271C-C472-4F8C-8E52-AF7DA131658E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AD48271C-C472-4F8C-8E52-AF7DA131658E}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -27,6 +23,10 @@ Global
 		{AA6B4E6F-9952-4912-97FA-84AEC58AE75B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AA6B4E6F-9952-4912-97FA-84AEC58AE75B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AA6B4E6F-9952-4912-97FA-84AEC58AE75B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9AB5D6EA-6419-423B-90C6-5644E898C254}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9AB5D6EA-6419-423B-90C6-5644E898C254}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9AB5D6EA-6419-423B-90C6-5644E898C254}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9AB5D6EA-6419-423B-90C6-5644E898C254}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,0 +1,81 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="LineRace.Object.GameObject" Collapsed="true">
+    <Position X="6.75" Y="1" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAEQAQAAAAggAgFIIAAAACEBAAAAAAAEAAAAAAAAA=</HashCode>
+      <FileName>Object\GameObject.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="LineRace.Object.Car" Collapsed="true">
+    <Position X="7.75" Y="3" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAEAAAIAAAAAAAAAAABgAAAAAAEAACAIUAAAAA=</HashCode>
+      <FileName>Object\Car.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="LineRace.Object.Background" Collapsed="true">
+    <Position X="1" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Object\Background.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="LineRace.Object.EnimesCar" Collapsed="true">
+    <Position X="9.25" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAQAAEBAAIAAAEAAAAAAABAAAAAAEAAAAAAUAAAAA=</HashCode>
+      <FileName>Object\EnimesCar.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="LineRace.Object.Line" Collapsed="true">
+    <Position X="5.25" Y="3" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAEBAAIAAAEAAAAAAABAAAAAAEBAAAAAUAAAAA=</HashCode>
+      <FileName>Object\Line.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="LineRace.Bonuses.Bonus" Collapsed="true">
+    <Position X="2.75" Y="3" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Bonuses\Bonus\Bonus.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="LineRace.Bonuses.SpeedBonus" Collapsed="true">
+    <Position X="4" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Bonuses\Bonus\BonusBarrel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="LineRace.Bonuses.SlowingBonus" Collapsed="true">
+    <Position X="1.75" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Bonuses\Bonus\BonusFuel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="LineRace.Bonuses.CarDecorator" Collapsed="true">
+    <Position X="8" Y="4.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAECAACggAgFAIAAAAhAAAAAAAEAECAQABAAAA=</HashCode>
+      <FileName>Bonuses\Decorator\CarDecorator.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="LineRace.Bonuses.BarrelDecorator" Collapsed="true">
+    <Position X="6" Y="5.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Bonuses\Decorator\BarrelDecorator.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="LineRace.Bonuses.Decorator.FuelDecorator" Collapsed="true">
+    <Position X="9.75" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Bonuses\Decorator\FuelDecorator.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

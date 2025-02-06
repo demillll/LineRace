@@ -65,7 +65,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\LineRace\LineRace.csproj">
+    <ProjectReference Include="..\EngineDX\LineRace.csproj">
       <Project>{ad48271c-c472-4f8c-8e52-af7da131658e}</Project>
       <Name>LineRace</Name>
     </ProjectReference>
