@@ -1,31 +1,31 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using LineRace.Engine;
+using LineRace.Object;
 using SharpDX;
 
-namespace LineRace
+namespace LineRace.Bonuses
 {
-    public abstract class Bonus : GameObject
-    {
+	/// <summary>
+	/// Абстрактный класс бонусов
+	/// </summary>
+	abstract class Bonus : GameObject
+	{
 		/// <summary>
-		/// констурктор бонуса
+		/// Конструктор класса Bonus
 		/// </summary>
-		/// <param name="sprite">параметр класса Sprite</param>
-		/// <param name="startPos">стартовая позиция объекта</param>
-		/// <param name="scale">масштаб объекта</param>
-		public bool Collected { get; private set; } = false;
-		public Bonus(Sprite sprite, Vector2 startPos, float scale) : base(sprite, startPos, scale, true) { }
-
-		public abstract void BonusAction(GameObject @object);
-		public void CollectBonus()
+		/// <param name="position"></param>
+		/// <param name="size"></param>
+		/// <param name="angle"></param>
+		/// <param name="sprite"></param>
+		/// <param name="isActive"></param>
+		public Bonus(Vector2 position, Vector2 size, float angle, Sprite sprite, bool isActive)
+			: base(position, size, angle, sprite, isActive)
 		{
-			if (!Collected)
-			{
-				Collected = true;
-				// Логика удаления или отправки события серверу
-			}
 		}
+		/// <summary>
+		/// Декорация танка
+		/// </summary>
+		/// <param name="tank">Декорируемый танк</param>
+		/// <returns></returns>
+		public abstract Car TankDecorate(Car tank);
 	}
 }

@@ -22,7 +22,7 @@ namespace UnitTest
 
             };
 
-            car = new FuelDecorates(car);
+            car = new FuelDecorator(car);
 
             Assert.AreEqual(car.Fuel, 100);
 

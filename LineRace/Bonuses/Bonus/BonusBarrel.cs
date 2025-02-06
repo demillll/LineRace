@@ -1,40 +1,29 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using LineRace.Engine;
 using SharpDX;
+using LineRace.Object;
 
-namespace LineRace
+namespace LineRace.Bonuses
 {
-    class BonusBarrel : Bonus
-    {
+	/// <summary>
+	/// Класс увеличения скорости
+	/// </summary>
+	class SpeedBonus : Bonus
+	{
 		/// <summary>
-		/// Констурктор бонуса топлива
+		/// Конструктор класса SpeedBonus
 		/// </summary>
-
-		/// /// <param name="sprite">параметр класса Sprite</param>
-		/// <param name="position">позиция объекта</param>
-		/// <param name="scale">масштаб объекта</param>
-
-		public BonusBarrel(Sprite sprite, Vector2 position, float scale) : base(sprite, position, scale)
+		/// <param name="position">Позиция</param>
+		/// <param name="size">Размер</param>
+		/// <param name="angle">Угол</param>
+		/// <param name="sprite">Спрайт</param>
+		/// <param name="isActive">Активен ли</param>
+		public SpeedBonus(Vector2 position, Vector2 size, float angle, Sprite sprite, bool isActive)
+			: base(position, size, angle, sprite, isActive)
 		{
-			collider = new Collider(this, new Vector2(0.4f, 0.4f));
 		}
-
-		public override void BonusAction(GameObject @object)
+		public override Car TankDecorate(Car tank)
 		{
-			Car car = @object as Car;
-			if (car != null)
-			{
-				@object = new BarrelDecorates(car);
-
-				// Синхронизация бонуса
-				if (NetworkManager.IsServer)
-				{
-					NetworkManager.SendBonusAction("Barrel", car.Id);
-				}
-			}
+			return new BarrelDecorator(tank, 5000f);
 		}
 	}
 }

@@ -1,40 +1,30 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using LineRace.Bonuses.Decorator;
+using LineRace.Engine;
+using LineRace.Object;
 using SharpDX;
 
-namespace LineRace
+namespace LineRace.Bonuses
 {
-    class BonusFuel : Bonus
-    {
-        /// <summary>
-        /// Констурктор бонуса топлива
-        /// </summary>
-        
-        /// /// <param name="sprite">параметр класса Sprite</param>
-        /// <param name="position">позиция объекта</param>
-        /// <param name="scale">масштаб объекта</param>
-        
-        public BonusFuel(Sprite sprite, Vector2 position, float scale) : base(sprite, position, scale)
-        {
-            collider = new Collider(this, new Vector2(0.4f, 0.4f));
-        }
-
-		public override void BonusAction(GameObject @object)
+	/// <summary>
+	/// Класс замедления 
+	/// </summary>
+	class SlowingBonus : Bonus
+	{
+		/// <summary>
+		/// Конструктор класса SlowingBonus
+		/// </summary>
+		/// <param name="position">Позиция</param>
+		/// <param name="size">Размер</param>
+		/// <param name="angle">Угол</param>
+		/// <param name="sprite">Спрайт</param>
+		/// <param name="isActive">Активен ли</param>
+		public SlowingBonus(Vector2 position, Vector2 size, float angle, Sprite sprite, bool isActive)
+			: base(position, size, angle, sprite, isActive)
 		{
-			Car car = @object as Car;
-			if (car != null)
-			{
-				@object = new FuelDecorates(car);
-
-				// Синхронизация состояния
-				if (NetworkManager.IsServer)
-				{
-					NetworkManager.SendBonusAction("Fuel", car.Id);
-				}
-			}
+		}
+		public override Car TankDecorate(Car tank)
+		{
+			return new FuelDecorator(tank, 5000f);
 		}
 	}
 }

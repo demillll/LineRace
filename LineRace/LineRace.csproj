@@ -88,8 +88,8 @@
     <Compile Include="Bonuses\Factory\BonusFactory.cs" />
     <Compile Include="Object\Car.cs" />
     <Compile Include="Bonuses\Decorator\BarrelDecorator.cs" />
-    <Compile Include="Bonuses\Decorator\CarDecorators.cs" />
-    <Compile Include="Bonuses\Decorator\FuelDecorates.cs" />
+    <Compile Include="Bonuses\Decorator\CarDecorator.cs" />
+    <Compile Include="Bonuses\Decorator\FuelDecorator.cs" />
     <Compile Include="Object\GameObject.cs" />
     <Compile Include="Object\Line.cs" />
     <Compile Include="GameScene.cs" />
