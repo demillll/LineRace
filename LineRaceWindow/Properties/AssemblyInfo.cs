@@ -7,12 +7,12 @@ using System.Windows;
 // Общие сведения об этой сборке предоставляются следующим набором
 // набор атрибутов. Измените значения этих атрибутов, чтобы изменить сведения,
 // связанные со сборкой.
-[assembly: AssemblyTitle("LineRaceWindow")]
+[assembly: AssemblyTitle("WpfApp_Game")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("LineRaceWindow")]
-[assembly: AssemblyCopyright("Copyright ©  2020")]
+[assembly: AssemblyProduct("WpfApp_Game")]
+[assembly: AssemblyCopyright("Copyright ©  2021")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -32,12 +32,12 @@ using System.Windows;
 
 
 [assembly: ThemeInfo(
-    ResourceDictionaryLocation.None, //где расположены словари ресурсов по конкретным тематикам
-                                     //(используется, если ресурс не найден на странице,
-                                     // или в словарях ресурсов приложения)
-    ResourceDictionaryLocation.SourceAssembly //где расположен словарь универсальных ресурсов
-                                              //(используется, если ресурс не найден на странице,
-                                              // в приложении или в каких-либо словарях ресурсов для конкретной темы)
+	ResourceDictionaryLocation.None, //где расположены словари ресурсов по конкретным тематикам
+									 //(используется, если ресурс не найден на странице,
+									 // или в словарях ресурсов приложения)
+	ResourceDictionaryLocation.SourceAssembly //где расположен словарь универсальных ресурсов
+											  //(используется, если ресурс не найден на странице,
+											  // в приложении или в каких-либо словарях ресурсов для конкретной темы)
 )]
 
 

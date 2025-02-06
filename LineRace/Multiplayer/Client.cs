@@ -9,7 +9,6 @@ using System.Diagnostics;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using SharpDX;
-using Newtonsoft.Json;
 
 namespace LineRace.Multiplayer
 {

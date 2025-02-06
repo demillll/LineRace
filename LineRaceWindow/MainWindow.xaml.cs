@@ -1,109 +1,89 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
-using LineRace.Managers;
-using LineRace;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
+using LineRace.Engine;
+using LineRace.Multiplayer;
 
-
-
-namespace DirigibleBattle
+namespace WpfApp_Game
 {
-	public partial class MainWindow
+	/// <summary>
+	/// Логика взаимодействия для MainWindow.xaml
+	/// </summary>
+	public partial class MainWindow : Window
 	{
-		private PlayerManager _playerManager;
-		private PrizeManager _prizeManager;
-		private GameManager _gameManager;
-		private UIManager _uiManager;
-		private RenderManager _renderManager;
-		private NetworkManager _networkManager;
-		private TimeManager _timeManager;
-
-
 		public MainWindow()
 		{
 			InitializeComponent();
-
-			_uiManager = new UIManager(ServerButton, ClientButton, IpAddressInput, GameOverLabel, firstPlayerInfo, secondPlayerInfo, ControlSchemeComboBox);
-
-			_playerManager = new PlayerManager();
-			_prizeManager = new PrizeManager();
-			_windManager = new WindManager();
-
-			_gameManager = new GameManager(glControl, this, _uiManager, _playerManager, _prizeManager, _windManager);
-			_timeManager = new TimeManager(_gameManager, _prizeManager, _windManager);
-
-			_networkManager = new NetworkManager(_gameManager, _uiManager, _timeManager, _playerManager);
-			_networkManager.OnNetworkConnectionLost += OnNetworkConnectionLost;
-			_playerManager.SetManagers(_networkManager, _gameManager);
-			_prizeManager.SetManagers(_networkManager, _gameManager);
-			_windManager.SetManagers(_networkManager, _gameManager);
-
-			_renderManager = new RenderManager(_gameManager, _networkManager);
-
-			_uiManager.DisplayLocalIPAddress(IpAddressLabel, IpAddressInput);
-
 		}
 
-		private void OnNetworkConnectionLost(string message)
+		private void Button_Click(object sender, RoutedEventArgs e)
 		{
-			if (Application.Current != null)
+			Client client;
+			//try
+			//{
+			if ((bool)CheckBox.IsChecked)
 			{
-				Application.Current.Dispatcher.Invoke(() =>
+				var server = new Server(5555);
+				var th1 = new Thread(() =>
 				{
-					this.Close();
-					MessageBox.Show(message, "meSSAge", MessageBoxButton.OK);
+					server.StartAcceptPlayers();
+					server.MainServerLoop();
 				});
+				th1.Start();
+				this.Title = server.serverEndPoint.ToString();
+				client = new Client(server.serverEndPoint);
+				StartApplication(client);
 			}
 			else
 			{
-				Console.WriteLine("Application.Current is null. Cannot use Dispatcher.");
+				client = new Client(TextBox.Text, 5555);
+				StartApplication(client);
 			}
+			//}
+			//catch (Exception ex)
+			//{
+			//    MessageBox.Show(ex.Message);
+			//}
 		}
-
-
-
-		private void ServerButton_Click(object sender, RoutedEventArgs e)
+		private void StartApplication(Client client)
 		{
-			try
+			while (true)
 			{
-				_networkManager.StartServer();
+				string d = client.GetDataFromServer();
+				if (d != null && d == "Wecominn ")
+				{
+					Debug.WriteLine("Connected");
+					break;
+				}
+				Thread.Sleep(50);
 			}
-			catch (Exception ex)
+			client.SendData1("Ready to start");
+			while (true)
 			{
-				Console.WriteLine($"Error starting server: {ex.Message}");
+				if (client.GetDataFromServer() == "Start ")
+				{
+					Debug.WriteLine("Start game");
+					break;
+				}
+				Thread.Sleep(50);
 			}
-		}
-		private void ClientButton_Click(object sender, RoutedEventArgs e)
-		{
-			try
+			using (RenderingApp application = new RenderingApp())
 			{
-				_networkManager.StartClient(IpAddressInput);
+				application.Run(client, (bool)CheckBox.IsChecked);
 			}
-			catch (Exception ex)
-			{
-				Console.WriteLine($"Error connecting as client: {ex.Message}");
-			}
-		}
-
-		private void ControlSchemeComboBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
-		{
-			if (_playerManager == null)
-				return;
-
-			string selectedScheme = (ControlSchemeComboBox.SelectedItem as System.Windows.Controls.ComboBoxItem)?.Content.ToString();
-			if (selectedScheme == "WASD")
-			{
-				_playerManager.SetControlSchemeToWASD();
-			}
-			else
-			{
-				_playerManager.SetControlSchemeToArrowKeys();
-			}
-		}
-
-
-		private void GlControl_Render(TimeSpan obj)
-		{
-			_renderManager.GlControl_Render(obj);
 		}
 	}
 }
