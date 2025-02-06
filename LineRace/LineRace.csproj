@@ -73,6 +73,7 @@
     <Compile Include="Bonuses\Factory\SlowingFactory.cs" />
     <Compile Include="Bonuses\Factory\SpeedBonusFactory.cs" />
     <Compile Include="Engine\InputHandler.cs" />
+    <Compile Include="Engine\Rendering.cs" />
     <Compile Include="TcpConnection\Client.cs" />
     <Compile Include="Components\Collider.cs" />
     <Compile Include="Components\GameAnimation.cs" />
